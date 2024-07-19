@@ -1,28 +1,28 @@
-from dc import propag2, prolin
+from data_collecting import search_page2, search_channel_link
 from read_write_csv import write_csv
 
 
-def prochannel(*args: str):
-    lins = []
+def search_channel(*args: str):
+    photos_links = []
     profiles = []
     data = []
-    for ch in args:
-        jd = prolin(ch)
-        profiles.append([jd[2], jd[1]])
-        lins.append(jd[0])
-    leng = []
-    for i, j in enumerate(lins):
-        print('Pesquisando: ', profiles[i][0])
-        a = propag2(website=j, suborview=0)
+    for channel in args:
+        dates_subscribers_photos = search_channel_link(channel)
+        profiles.append([dates_subscribers_photos[2], dates_subscribers_photos[1]])
+        photos_links.append(dates_subscribers_photos[0])
+    length = []
+    for i, j in enumerate(photos_links):
+        print('Searching: ', profiles[i][0])
+        a = search_page2(website=j, suborview=0)
         data.append(a[1])
-        if len(a[1]) > len(leng):
-            leng = a[0].copy()
+        if len(a[1]) > len(length):
+            length = a[0].copy()
     for i in range(0, len(data)):
-        if len(data[i]) < len(leng):
-            data[i] = [0] * (len(leng) - len(data[i])) + data[i]
-    write_csv('test7.csv', leng, data, profiles)
+        if len(data[i]) < len(length):
+            data[i] = [0] * (len(length) - len(data[i])) + data[i]
+    write_csv('test7.csv', length, data, profiles)
 
 
 if __name__ == '__main__':
     print('Iniciando...')
-    prochannel('Jazzghost')
+    search_channel('Jazzghost')
