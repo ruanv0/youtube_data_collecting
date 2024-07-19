@@ -1,2 +1,2 @@
-You need Selenium and Microsoft Edge Web Driver, you can change it easily with Chrome Web Driver
+You need Selenium, Microsoft Edge Web Driver and Numpy for somethings, you can change Microsoft Web Driver it easily with Chrome Web Driver
 This project is badly documented, any help is good
