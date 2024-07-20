@@ -10,53 +10,53 @@ class Day:
             month = '0' + str(month)
         self.day = f'{year}-{month}-{day}'
 
-    def __add__(self, num: int):
-        r = self.splitted
-        c = False
+    def __add__(self, int_for_addition: int):
+        day_splitted = self.splitted
+        boolean_0 = False
         while True:
-            if num + r[2] > months_number_days[r[1] - 1]:
-                if r[1] + 1 > 12:
-                    r[0] += 1
-                    num -= months_number_days[r[1] - 1] - r[2]
-                    r[2] = 0
-                    r[1] = 1
+            if int_for_addition + day_splitted[2] > months_number_days[day_splitted[1] - 1]:
+                if day_splitted[1] + 1 > 12:
+                    day_splitted[0] += 1
+                    int_for_addition -= months_number_days[day_splitted[1] - 1] - day_splitted[2]
+                    day_splitted[2] = 0
+                    day_splitted[1] = 1
                 else:
-                    v = months_number_days[r[1] - 1]
-                    if r[0] % 4 == 0 and r[1] == 2:
+                    v = months_number_days[day_splitted[1] - 1]
+                    if day_splitted[0] % 4 == 0 and day_splitted[1] == 2:
                         v += 1
-                    num -= v - r[2]
-                    r[1] += 1
-                    r[2] = 0
+                    int_for_addition -= v - day_splitted[2]
+                    day_splitted[1] += 1
+                    day_splitted[2] = 0
             else:
-                r[2] += num
-                c = True
-            if c:
+                day_splitted[2] += int_for_addition
+                boolean_0 = True
+            if boolean_0:
                 break
-        return Day(r[0], r[1], r[2])
+        return Day(day_splitted[0], day_splitted[1], day_splitted[2])
 
     def __sub__(self, num: int):
-        r = self.splitted
-        c = False
+        day_splitted = self.splitted
+        boolean_0 = False
         while True:
-            if r[2] - num < 1:
-                if r[1] - 1 < 1:
-                    r[0] -= 1
-                    r[1] = 12
-                    num -= r[2]
-                    r[2] = months_number_days[r[1] - 1]
+            if day_splitted[2] - num < 1:
+                if day_splitted[1] - 1 < 1:
+                    day_splitted[0] -= 1
+                    day_splitted[1] = 12
+                    num -= day_splitted[2]
+                    day_splitted[2] = months_number_days[day_splitted[1] - 1]
                 else:
-                    r[1] -= 1
-                    v = months_number_days[r[1] - 1]
-                    if r[1] == 2 and r[0] % 4 == 0:
+                    day_splitted[1] -= 1
+                    v = months_number_days[day_splitted[1] - 1]
+                    if day_splitted[1] == 2 and day_splitted[0] % 4 == 0:
                         v += 1
-                    num -= r[2]
-                    r[2] = v
+                    num -= day_splitted[2]
+                    day_splitted[2] = v
             else:
-                r[2] -= num
-                c = True
-            if c:
+                day_splitted[2] -= num
+                boolean_0 = True
+            if boolean_0:
                 break
-        return Day(r[0], r[1], r[2])
+        return Day(day_splitted[0], day_splitted[1], day_splitted[2])
 
 
 class Month:
@@ -67,23 +67,23 @@ class Month:
         elif month < 10:
             self.month = f'{year}-0{month}'
 
-    def __add__(self, other: int):
-        r = self.splitted
+    def __add__(self, int_for_addition: int):
+        month_splitted = self.splitted
         while True:
-            if r[1] + other > 12:
-                r[0] += 1
-                other -= 12 - r[1]
-                r[1] = 1
+            if month_splitted[1] + int_for_addition > 12:
+                month_splitted[0] += 1
+                int_for_addition -= 12 - month_splitted[1]
+                month_splitted[1] = 1
             else:
                 break
-        return r
+        return month_splitted
 
-    def __sub__(self, other: int):
+    def __sub__(self, int_for_subtraction: int):
         r = self.splitted
         while True:
-            if r[1] - other < 1:
+            if r[1] - int_for_subtraction < 1:
                 r[0] -= 1
-                other -= r[1]
+                int_for_subtraction -= r[1]
                 r[1] = 12
             else:
                 break
