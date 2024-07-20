@@ -1,4 +1,4 @@
-from data_collecting import search_page2, search_channel_link
+from data_collecting import search_page, search_channel_link
 from read_write_csv import write_csv
 
 
@@ -13,7 +13,7 @@ def search_channel(*args: str):
     length = []
     for i, j in enumerate(photos_links):
         print('Searching: ', profiles[i][0])
-        a = search_page2(website=j, suborview=0)
+        a = search_page(website=j, suborview=0)
         data.append(a[1])
         if len(a[1]) > len(length):
             length = a[0].copy()

@@ -10,89 +10,89 @@ def add9(dates: list[Day], data: list[int]) -> tuple[list[Day], list[int]]:
     return dates, data
 
 
-def orgli(alist: list[int]) -> list[int]:
-    la = 999999999999999
-    k = False
-    j = False
-    n = 0
-    for i, y in enumerate(alist):
-        if y == 999999999999999:
-            if not k:
-                la = i-1
-                k = True
-            if i == len(alist)-1:
-                if n == 0:
-                    n = alist[la] - alist[la - 1]
-                for jkh in range(la+1, i+1):
-                    alist[jkh] = alist[jkh-1] + alist[jkh-1] - alist[jkh-2]
-                    k = False
-                    j = False
-        if k and y != 999999999999999:
-            j = True
-        if j:
-            n = alist[i] - alist[la]
-            f = n / (i - la)
-            for jkh in range(la + 1, i):
-                alist[jkh] = alist[la] + int(f * (jkh - la))
-                k = False
-                j = False
-    return alist
+def interpolate_9(list_0: list[int]) -> list[int]:
+    nines = 999999999999999
+    boolean_0 = False
+    boolean_1 = False
+    counter = 0
+    for index, object in enumerate(list_0):
+        if object == 999999999999999:
+            if not boolean_0:
+                nines = index-1
+                boolean_0 = True
+            if index == len(list_0)-1:
+                if counter == 0:
+                    counter = list_0[nines] - list_0[nines - 1]
+                for number in range(nines+1, index+1):
+                    list_0[number] = list_0[number - 1] + list_0[number - 1] - list_0[number - 2]
+                    boolean_0 = False
+                    boolean_1 = False
+        if boolean_0 and object != 999999999999999:
+            boolean_1 = True
+        if boolean_1:
+            counter = list_0[index] - list_0[nines]
+            f = counter / (index - nines)
+            for number in range(nines + 1, index):
+                list_0[number] = list_0[nines] + int(f * (number - nines))
+                boolean_0 = False
+                boolean_1 = False
+    return list_0
 
 
-def orglist(dates1: list[Day], dates2: list[Day], data1: list[int], data2: list[int]) -> tuple[list[Day], list[int]]:
-    dates0 = []
-    data0 = []
-    a = add9(dates1, data1)
-    b = add9(dates2, data2)
-    dates1 = a[0]
-    data1 = orgli(a[1])
-    dates2 = b[0]
-    data2 = orgli(b[1])
-    if lower_or_equal(dates1[0], dates2[0]) & lower_or_equal(dates2[0], dates1[-1]) & lower_or_equal(dates1[-1], dates2[-1]):
-        dates0 = lrange(dates1[0], dates2[-1])
-        i = where(dates2[0], dates1)
-        data0 = data1[:i] + data2
-    elif lower_or_equal(dates2[0], dates1[0]) & lower_or_equal(dates1[0], dates2[-1]) & lower_or_equal(dates2[-1], dates1[-1]):
-        dates0 = lrange(dates2[0], dates1[-1])
-        i = where(dates1[0], dates2)
-        data0 = data2[:i] + data1
-    elif greater(dates2[-1], dates1[0]):
-        dates0 = lrange(dates1[0], dates2[-1])
-        data0 = data1 + data2
-        for i in range(0, len(dates0) - len(data0)):
-            data0.insert(len(data1) + i, 999999999999999)
-        data0 = orgli(data0)
-    elif greater(dates1[-1], dates2[0]):
-        dates0 = lrange(dates2[0], dates1[-1])
-        data0 = data2 + data1
-        for i in range(0, len(dates0) - len(data0)):
-            data0.insert(len(data1) + i, 999999999999999)
-        data0 = orgli(data0)
-    return dates0, data0
+def join_dates_values(dates_0: list[Day], dates_1: list[Day], values_0: list[int], values_1: list[int]) -> tuple[list[Day], list[int]]:
+    united_dates = []
+    united_values = []
+    dates_0_with_nines = add9(dates_0, values_0)
+    dates_1_with_nines = add9(dates_1, values_1)
+    dates_0 = dates_0_with_nines[0]
+    values_0 = interpolate_9(dates_0_with_nines[1])
+    dates_1 = dates_1_with_nines[0]
+    values_1 = interpolate_9(dates_1_with_nines[1])
+    if lower_or_equal(dates_0[0], dates_1[0]) & lower_or_equal(dates_1[0], dates_0[-1]) & lower_or_equal(dates_0[-1], dates_1[-1]):
+        united_dates = lrange(dates_0[0], dates_1[-1])
+        i = where(dates_1[0], dates_0)
+        united_values = values_0[:i] + values_1
+    elif lower_or_equal(dates_1[0], dates_0[0]) & lower_or_equal(dates_0[0], dates_1[-1]) & lower_or_equal(dates_1[-1], dates_0[-1]):
+        united_dates = lrange(dates_1[0], dates_0[-1])
+        i = where(dates_0[0], dates_1)
+        united_values = values_1[:i] + values_0
+    elif greater(dates_1[-1], dates_0[0]):
+        united_dates = lrange(dates_0[0], dates_1[-1])
+        united_values = values_0 + values_1
+        for i in range(0, len(united_dates) - len(united_values)):
+            united_values.insert(len(values_0) + i, 999999999999999)
+        united_values = interpolate_9(united_values)
+    elif greater(dates_0[-1], dates_1[0]):
+        united_dates = lrange(dates_1[0], dates_0[-1])
+        united_values = values_1 + values_0
+        for i in range(0, len(united_dates) - len(united_values)):
+            united_values.insert(len(values_0) + i, 999999999999999)
+        united_values = interpolate_9(united_values)
+    return united_dates, united_values
 
 
-def exn(jf: str) -> int:
-    if '--\n' in jf:
-        jf = jf[3:]
-    if 'K' in jf:
-        if '.' in jf:
-            if len(jf) == 4:
-                jf = jf.replace('.', '').replace('K', '00')
-            elif '.' in jf[1] and len(jf) == 5:
-                jf = jf.replace('.', '').replace('K', '0')
-            elif '.' in jf[2] and len(jf) == 5:
-                jf = jf.replace('.', '').replace('K', '00')
+def fix_value(value: str) -> int:
+    if '--\n' in value:
+        value = value[3:]
+    if 'K' in value:
+        if '.' in value:
+            if len(value) == 4:
+                value = value.replace('.', '').replace('K', '00')
+            elif '.' in value[1] and len(value) == 5:
+                value = value.replace('.', '').replace('K', '0')
+            elif '.' in value[2] and len(value) == 5:
+                value = value.replace('.', '').replace('K', '00')
         else:
-            jf = jf.replace('.', '').replace('K', '000')
-    if 'M' in jf:
-        if '.' in jf:
-            if jf[2] == '.':
-                jf = jf.replace('.', '').replace('M', '00000')
-            elif jf[1] == '.':
-                if len(jf) == 5:
-                    jf = jf.replace('.', '').replace('M', '0000')
-                elif len(jf) == 4:
-                    jf = jf.replace('.', '').replace('M', '00000')
+            value = value.replace('.', '').replace('K', '000')
+    if 'M' in value:
+        if '.' in value:
+            if value[2] == '.':
+                value = value.replace('.', '').replace('M', '00000')
+            elif value[1] == '.':
+                if len(value) == 5:
+                    value = value.replace('.', '').replace('M', '0000')
+                elif len(value) == 4:
+                    value = value.replace('.', '').replace('M', '00000')
         else:
-            jf = jf.replace('M', '000000')
-    return int(jf)
+            value = value.replace('M', '000000')
+    return int(value)

@@ -7,7 +7,7 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from dates import Day
 from read_write_csv import write_csv
-from utils import add9, orgli
+from utils import add9, interpolate_9
 
 
 def collect_subs_data(item: str) -> str:
@@ -98,7 +98,7 @@ def search_youtube_page(user: str, name: str):
     subs.reverse()
     subs = [int(a) for a in subs]
     e = [*add9(dates, subs)]
-    e[1] = orgli(e[1])
+    e[1] = interpolate_9(e[1])
     write_csv('test01.csv', e[0], [e[1]], [[name, '']])
     '''
     try:
