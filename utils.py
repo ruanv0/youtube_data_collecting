@@ -1,8 +1,8 @@
-from dates import lrange, Day, where, lower_or_equal, greater
+from dates import days_range, Day, where, lower_or_equal, greater
 
 
 def add9(dates: list[Day], data: list[int]) -> tuple[list[Day], list[int]]:
-    a = lrange(dates[0], dates[-1])
+    a = days_range(dates[0], dates[-1])
     for i in range(0, len(a)):
         if a[i].day != dates[i].day:
             data.insert(i, 999999999999999)
@@ -49,21 +49,21 @@ def join_dates_values(dates_0: list[Day], dates_1: list[Day], values_0: list[int
     dates_1 = dates_1_with_nines[0]
     values_1 = interpolate_9(dates_1_with_nines[1])
     if lower_or_equal(dates_0[0], dates_1[0]) & lower_or_equal(dates_1[0], dates_0[-1]) & lower_or_equal(dates_0[-1], dates_1[-1]):
-        united_dates = lrange(dates_0[0], dates_1[-1])
+        united_dates = days_range(dates_0[0], dates_1[-1])
         i = where(dates_1[0], dates_0)
         united_values = values_0[:i] + values_1
     elif lower_or_equal(dates_1[0], dates_0[0]) & lower_or_equal(dates_0[0], dates_1[-1]) & lower_or_equal(dates_1[-1], dates_0[-1]):
-        united_dates = lrange(dates_1[0], dates_0[-1])
+        united_dates = days_range(dates_1[0], dates_0[-1])
         i = where(dates_0[0], dates_1)
         united_values = values_1[:i] + values_0
     elif greater(dates_1[-1], dates_0[0]):
-        united_dates = lrange(dates_0[0], dates_1[-1])
+        united_dates = days_range(dates_0[0], dates_1[-1])
         united_values = values_0 + values_1
         for i in range(0, len(united_dates) - len(united_values)):
             united_values.insert(len(values_0) + i, 999999999999999)
         united_values = interpolate_9(united_values)
     elif greater(dates_0[-1], dates_1[0]):
-        united_dates = lrange(dates_1[0], dates_0[-1])
+        united_dates = days_range(dates_1[0], dates_0[-1])
         united_values = values_1 + values_0
         for i in range(0, len(united_dates) - len(united_values)):
             united_values.insert(len(values_0) + i, 999999999999999)

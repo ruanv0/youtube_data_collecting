@@ -1,4 +1,4 @@
-m = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+months_number_days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
 
 class Day:
@@ -14,14 +14,14 @@ class Day:
         r = self.splitted
         c = False
         while True:
-            if num + r[2] > m[r[1] - 1]:
+            if num + r[2] > months_number_days[r[1] - 1]:
                 if r[1] + 1 > 12:
                     r[0] += 1
-                    num -= m[r[1] - 1] - r[2]
+                    num -= months_number_days[r[1] - 1] - r[2]
                     r[2] = 0
                     r[1] = 1
                 else:
-                    v = m[r[1] - 1]
+                    v = months_number_days[r[1] - 1]
                     if r[0] % 4 == 0 and r[1] == 2:
                         v += 1
                     num -= v - r[2]
@@ -43,10 +43,10 @@ class Day:
                     r[0] -= 1
                     r[1] = 12
                     num -= r[2]
-                    r[2] = m[r[1] - 1]
+                    r[2] = months_number_days[r[1] - 1]
                 else:
                     r[1] -= 1
-                    v = m[r[1] - 1]
+                    v = months_number_days[r[1] - 1]
                     if r[1] == 2 and r[0] % 4 == 0:
                         v += 1
                     num -= r[2]
@@ -90,97 +90,81 @@ class Month:
         return r
 
 
-def lrange(d0: Day, d1: Day) -> list[Day]:
-    d0 = d0.splitted
-    d1 = d1.splitted
-    lista = []
-    for x in range(d0[0], d1[0] + 1):
-        me = 1
-        mi = 12
-        if x == d0[0]:
-            me = d0[1]
-        if x == d1[0]:
-            mi = d1[1]
-        for y in range(me, mi + 1):
-            v1 = m[y - 1]
-            v0 = 1
-            if x % 4 == 0 and y == 2:
-                v1 += 1
-            if x == d0[0] and y == d0[1]:
-                v0 = d0[2]
-            if x == d1[0] and y == d1[1]:
-                v1 = d1[2]
-            for z in range(v0, v1 + 1):
-                lista.append(Day(x, y, z))
-    return lista
-
-
-def sub_dates(day0: Day, day1: Day) -> int:
-    x = 0
-    if day1.splitted[0] > day0.splitted[0]:
-        x = 1
-    elif day1.splitted[0] == day0.splitted[0]:
-        if day1.splitted[1] > day0.splitted[1]:
-            x = 1
-        elif day1.splitted[1] == day0.splitted[1]:
-            if day1.splitted[2] > day0.splitted[2]:
-                x = 1
-    if x == 0:
-        return len(lrange(day1, day0)) - 1
-    elif x == 1:
-        return len(lrange(day0, day1)) - 1
+def days_range(years_months_days_splitted_0: Day, years_months_days_splitted_1: Day) -> list[Day]:
+    years_months_days_splitted_0 = years_months_days_splitted_0.splitted
+    years_months_days_splitted_1 = years_months_days_splitted_1.splitted
+    list_0 = []
+    for year in range(years_months_days_splitted_0[0], years_months_days_splitted_1[0] + 1):
+        month_0 = 1
+        month_1 = 12
+        if year == years_months_days_splitted_0[0]:
+            month_0 = years_months_days_splitted_0[1]
+        if year == years_months_days_splitted_1[0]:
+            month_1 = years_months_days_splitted_1[1]
+        for month in range(month_0, month_1 + 1):
+            day_1 = months_number_days[month - 1]
+            day_0 = 1
+            if year % 4 == 0 and month == 2:
+                day_1 += 1
+            if year == years_months_days_splitted_0[0] and month == years_months_days_splitted_0[1]:
+                day_0 = years_months_days_splitted_0[2]
+            if year == years_months_days_splitted_1[0] and month == years_months_days_splitted_1[1]:
+                day_1 = years_months_days_splitted_1[2]
+            for z in range(day_0, day_1 + 1):
+                list_0.append(Day(year, month, z))
+    return list_0
 
 
 def greater(day0: Day, day1: Day) -> bool:
-    x = False
+    boolean_0 = False
     if day0.splitted[0] > day1.splitted[0]:
-        x = True
+        boolean_0 = True
     elif day0.splitted[0] == day1.splitted[0]:
         if day0.splitted[1] > day1.splitted[1]:
-            x = True
+            boolean_0 = True
         elif day0.splitted[1] == day1.splitted[1]:
             if day0.splitted[2] > day1.splitted[2]:
-                x = True
-    return x
+                boolean_0 = True
+    return boolean_0
     
 
 def lower(day0: Day, day1: Day) -> bool:
-    x = False
+    boolean_0 = False
     if day0.splitted[0] < day1.splitted[0]:
-        x = True
+        boolean_0 = True
     elif day0.splitted[0] == day1.splitted[0]:
         if day0.splitted[1] < day1.splitted[1]:
-            x = True
+            boolean_0 = True
         elif day0.splitted[1] == day1.splitted[1]:
             if day0.splitted[2] < day1.splitted[2]:
-                x = True
-    return x
+                boolean_0 = True
+    return boolean_0
 
 
 def greater_or_equal(day0: Day, day1: Day) -> bool:
-    x = False
+    boolean_0 = False
     if day0.splitted[0] >= day1.splitted[0]:
-        x = True
+        boolean_0 = True
     elif day0.splitted[0] == day1.splitted[0]:
         if day0.splitted[1] >= day1.splitted[1]:
-            x = True
+            boolean_0 = True
         elif day0.splitted[1] == day1.splitted[1]:
             if day0.splitted[2] >= day1.splitted[2]:
-                x = True
-    return x
+                boolean_0 = True
+    return boolean_0
 
 
 def lower_or_equal(day0: Day, day1: Day) -> bool:
-    x = False
+    boolean_0 = False
     if day0.splitted[0] <= day1.splitted[0]:
-        x = True
+        boolean_0 = True
     elif day0.splitted[0] == day1.splitted[0]:
         if day0.splitted[1] <= day1.splitted[1]:
-            x = True
+            boolean_0 = True
         elif day0.splitted[1] == day1.splitted[1]:
             if day0.splitted[2] <= day1.splitted[2]:
-                x = True
-    return x
+                boolean_0 = True
+    return boolean_0
 
 
 def where(obj: Day, dates: list[Day]):
