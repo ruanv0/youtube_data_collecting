@@ -17,12 +17,15 @@ import pandas
 service = Service(executable_path='/home/ruanv/Documentos/youtube/msedgedriver')
 
 
-def take_data(website: str, viewsorsubs: int) -> tuple[list[Day], list[int]]:
+# 'subs_or_views' variable may be 0 (zero) or 1 (one).
+# if 'subs_or_views' variable is 0, take subscribers data
+# else if 'subs_or_views' variable is 1, take views data
+def take_data(website: str, subs_or_views: int) -> tuple[list[Day], list[int]]:
     subs = []
-    dates = []
+    data = []
     string0 = 'TotalSubscribers'
     string1 = 'TotalVideoViews'
-    subsdata = ''
+    subscribers_string = ''
     string2 = 'graphdivtotalsubs'
     string3 = 'graphdivtotalviews'
     string = ''
@@ -43,55 +46,55 @@ def take_data(website: str, viewsorsubs: int) -> tuple[list[Day], list[int]]:
     except TimeoutException:
         pass
     elements = driver.find_elements(by='xpath', value='//script[@type="text/javascript"]')
-    if viewsorsubs == 0 and boolean_0:
+    if subs_or_views == 0 and boolean_0:
         string = string2
-    elif viewsorsubs == 1 and boolean_0:
+    elif subs_or_views == 1 and boolean_0:
         string = string3
-    elif viewsorsubs == 0 and not boolean_0:
+    elif subs_or_views == 0 and not boolean_0:
         string = string0
-    elif viewsorsubs == 1 and not boolean_0:
+    elif subs_or_views == 1 and not boolean_0:
         string = string1
-    for elem in elements:
-        b = elem.get_property('firstChild')
-        if b is not None:
-            if string in b['nodeValue']:
-                subsdata = b['nodeValue']
+    for element in elements:
+        date = element.get_property('firstChild')
+        if date is not None:
+            if string in date['nodeValue']:
+                subscribers_string = date['nodeValue']
     driver.quit()
     if boolean_0:
-        split_list_0 = subsdata.split(' +')[1:-2]
+        split_list_0 = subscribers_string.split(' +')[1:-2]
         split_list_0[0] = split_list_0[0][1:]
-        for i, bag in enumerate(split_list_0):
-            split_list_0[i] = bag.split('\\n"')[0]
-        for j in range(0, len(split_list_0)):
-            if '+"' in split_list_0[j]:
-                split_list_0[j] = split_list_0[j].split('+"')[1]
-            elif '"' in split_list_0[j]:
-                split_list_0[j] = split_list_0[j].split('"')[1]
-        for k in split_list_0:
-            split_list_1 = k.split(',')
+        for index, object_ in enumerate(split_list_0):
+            split_list_0[index] = object_.split('\\n"')[0]
+        for index in range(0, len(split_list_0)):
+            if '+"' in split_list_0[index]:
+                split_list_0[index] = split_list_0[index].split('+"')[1]
+            elif '"' in split_list_0[index]:
+                split_list_0[index] = split_list_0[index].split('"')[1]
+        for object_ in split_list_0:
+            split_list_1 = object_.split(',')
             subs.append(int(split_list_1[1]))
-            dates.append(Day(int(split_list_1[0][0:4]), int(split_list_1[0][4:6]), int(split_list_1[0][6:8])))
+            data.append(Day(int(split_list_1[0][0:4]), int(split_list_1[0][4:6]), int(split_list_1[0][6:8])))
     if not boolean_0:
-        split_list_2 = subsdata.split(' ')
-        for i in split_list_2:
-            dates.append(i)
-        dates = list(filter(lambda x: x != '+', dates))
-        dates = [i[1:-3] for i in dates]
-        i = 0
-        for g in range(0, len(dates)):
-            for n in dates[g - i]:
-                if n not in '0123456789-,':
-                    dates.pop(g - i)
-                    i += 1
-            if dates[g - i] == '':
-                dates.pop(g - i)
-                i += 1
-        for split_list_0 in range(0, len(dates)):
-            a = dates[split_list_0].split(',')
-            b = a[0].split('-')
-            dates[split_list_0] = Day(int(b[0]), int(b[1]), int(b[2]))
-            subs.append(int(a[1]))
-    return dates, subs
+        split_list_2 = subscribers_string.split(' ')
+        for object_ in split_list_2:
+            data.append(object_)
+        data = list(filter(lambda x: x != '+', data))
+        data = [i[1:-3] for i in data]
+        index_0 = 0
+        for index_1 in range(0, len(data)):
+            for object_ in data[index_1 - index_0]:
+                if object_ not in '0123456789-,':
+                    data.pop(index_1 - index_0)
+                    index_0 += 1
+            if data[index_1 - index_0] == '':
+                data.pop(index_1 - index_0)
+                index_0 += 1
+        for split_list_0 in range(0, len(data)):
+            data_splitted = data[split_list_0].split(',')
+            date = data_splitted[0].split('-')
+            data[split_list_0] = Day(int(date[0]), int(date[1]), int(date[2]))
+            subs.append(int(data_splitted[1]))
+    return data, subs
 
 
 def search_channel_link(channel_name: str):
@@ -103,10 +106,10 @@ def search_channel_link(channel_name: str):
         driver.get(f'https://google.com/search?q={channel_name.replace(" ", "+")}+youtube+channel')
         WebDriverWait(driver, 4).until(
             expected_conditions.presence_of_element_located((By.XPATH, '//cite')))
-        chan = driver.find_elements(By.XPATH, '//cite')
-        for t in chan:
-            if 'youtube.com' in t.get_property('firstChild')['textContent']:
-                t.click()
+        elements_0 = driver.find_elements(By.XPATH, '//cite')
+        for element in elements_0:
+            if 'youtube.com' in element.get_property('firstChild')['textContent']:
+                element.click()
                 break
         WebDriverWait(driver, 30).until(
             expected_conditions.presence_of_element_located((By.XPATH, '//link[@rel="image_src"]')))
@@ -125,13 +128,16 @@ def search_channel_link(channel_name: str):
         return 0, 0, 0
 
 
-def take_data_2(website: str, views_or_subs: int) -> tuple[list[Day], list[int], str]:
+# 'subs_or_views' variable may be 0 (zero) or 1 (one).
+# if 'subs_or_views' variable is 0, take subscribers data
+# else if 'subs_or_views' variable is 1, take views data
+def take_data_2(website: str, subs_or_views: int) -> tuple[list[Day], list[int], str]:
     def convert_months(list_0):
         months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October',
                   'November', 'December']
-        for index, object in enumerate(list_0):
-            jh = object.split(' ')
-            list_0[index] = Month(int(jh[3]), months.index(jh[2].split(',')[0]) + 1)
+        for index_, object_ in enumerate(list_0):
+            splitted_object = object_.split(' ')
+            list_0[index_] = Month(int(splitted_object[3]), months.index(splitted_object[2].split(',')[0]) + 1)
         return list_0
 
     optionsi = Options()
@@ -143,9 +149,9 @@ def take_data_2(website: str, views_or_subs: int) -> tuple[list[Day], list[int],
     driver.switch_to.window(driver.window_handles[0])
     WebDriverWait(driver, 30).until(expected_conditions.visibility_of_element_located(
         (By.XPATH, '//input[@placeholder="Enter YouTube Username"]')))
-    g = driver.find_element(
+    element_0 = driver.find_element(
         By.XPATH, '//input[@placeholder="Enter YouTube Username"]')
-    g.send_keys(website, Keys.ENTER)
+    element_0.send_keys(website, Keys.ENTER)
     WebDriverWait(driver, 30).until(
         expected_conditions.element_to_be_clickable((By.XPATH, '//div[@id="YouTubeUserMenu"]')))
     driver.get(f'{driver.current_url}/monthly')
@@ -155,15 +161,15 @@ def take_data_2(website: str, views_or_subs: int) -> tuple[list[Day], list[int],
         expected_conditions.presence_of_element_located((By.CSS_SELECTOR, 'g[class="highcharts-markers '
                                                                           'highcharts-series-0 highcharts-line-series '
                                                                           'highcharts-tracker"]')))
-    elements = driver.find_elements(by='css selector',
+    elements_1 = driver.find_elements(by='css selector',
                                  value='g[class="highcharts-markers highcharts-series-0 highcharts-line-series '
                                        'highcharts-tracker"]')
     website_1 = f'https://web.archive.org/web/*/{driver.current_url}'
     items = []
-    if views_or_subs == 0:
-        items = elements[0].get_property('childNodes')
-    elif views_or_subs == 1:
-        items = elements[1].get_property('childNodes')
+    if subs_or_views == 0:
+        items = elements_1[0].get_property('childNodes')
+    elif subs_or_views == 1:
+        items = elements_1[1].get_property('childNodes')
     for item in items:
         if item == items[0]:
             ActionChains(driver).move_to_element(item).click().perform()
@@ -181,18 +187,18 @@ def take_data_2(website: str, views_or_subs: int) -> tuple[list[Day], list[int],
                                  '//div[@style="width: 860px; height: 32px; line-height: 32px; background: #f8f8f8;; padding: 0px 20px; color:#444; font-size: 9pt; border-bottom: 1px solid #eee;"]')
     for element in days_elements_0:
         if element.find_element(By.XPATH, './div[@style="float: left; width: 95px;"]').text == '2023-11-01':
-            if views_or_subs == 0:
+            if subs_or_views == 0:
                 list_dates.insert(0, fix_value(element.find_element(By.XPATH, './div[@style="float: left; width: 205px;"]/div[@style="width: 140px; float: left;"]').text.replace(',', '')))
                 list_data.insert(0, element.find_element(By.XPATH, './div[@style="float: left; width: 95px;"]').text[:-3])
-            elif views_or_subs == 1:
+            elif subs_or_views == 1:
                 list_dates.insert(0, fix_value(element.find_element(By.XPATH, './div[@style="float: left; width: 240px;"]/div[@style="width: 140px; float: left;"]').text.replace(',', '')))
                 list_data.insert(0, element.find_element(By.XPATH, './div[@style="float: left; width: 95px;"]').text[:-3])
     for element in days_elements_1:
         if element.find_element(By.XPATH, './div[@style="float: left; width: 95px;"]').text == '2023-11-01':
-            if views_or_subs == 0:
+            if subs_or_views == 0:
                 list_dates.insert(0, fix_value(element.find_element(By.XPATH, './div[@style="float: left; width: 205px;"]/div[@style="width: 140px; float: left;"]').text.replace(',', '')))
                 list_data.insert(0, element.find_element(By.XPATH, './div[@style="float: left; width: 95px;"]').text[:-3])
-            elif views_or_subs == 1:
+            elif subs_or_views == 1:
                 list_dates.insert(0, fix_value(element.find_element(By.XPATH, './div[@style="float: left; width: 240px;"]/div[@style="width: 140px; float: left;"]').text.replace(',', '')))
                 list_data.insert(0, element.find_element(By.XPATH, './div[@style="float: left; width: 95px;"]').text[:-3])
     driver.quit()
@@ -201,7 +207,7 @@ def take_data_2(website: str, views_or_subs: int) -> tuple[list[Day], list[int],
     list_data[0] = Month(int(month[0]), int(month[1]))
     list_data.reverse()
     list_dates.reverse()
-    if views_or_subs == 0:
+    if subs_or_views == 0:
         list_dates_copy = list_dates.copy()
         old_variable = ''
         count = 0
@@ -224,6 +230,9 @@ def take_data_2(website: str, views_or_subs: int) -> tuple[list[Day], list[int],
     return data[0], interpolate_9(data[1]), website_1
 
 
+# 'subs_or_views' variable may be 0 (zero) or 1 (one).
+# if 'subs_or_views' variable is 0, take subscribers data
+# else if 'subs_or_views' variable is 1, take views data
 def search_page(website: str, start=Day(2010, 1, 1), final=Day(2019, 9, 16), subs_or_views=0) -> tuple[list[Day], list[int]]:
     data_0 = take_data_2(website, subs_or_views)
     months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
@@ -347,7 +356,7 @@ def take_data_from_comparison(website: str):
                 break
             e = driver.find_element(By.XPATH, value='//div[@class="dygraph-legend"]')
             f = e.text.split(': ')
-            print(len(dates_), 'de 718')
+            print(len(dates_), 'of 718')
             if len(f) == 5:
                 j = f[0].replace('/', '-')
                 if j not in dates_:
