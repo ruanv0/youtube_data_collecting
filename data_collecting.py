@@ -197,40 +197,40 @@ def take_data_2(website: str, views_or_subs: int) -> tuple[list[Day], list[int],
                 list_data.insert(0, element.find_element(By.XPATH, './div[@style="float: left; width: 95px;"]').text[:-3])
     driver.quit()
     list_data = [list_data[0]] + convert_months(list_data[1:])
-    a = list_data[0].split('-')
-    list_data[0] = Month(int(a[0]), int(a[1]))
+    month = list_data[0].split('-')
+    list_data[0] = Month(int(month[0]), int(month[1]))
     list_data.reverse()
     list_dates.reverse()
     if views_or_subs == 0:
         list_dates_copy = list_dates.copy()
-        old_va = ''
+        old_variable = ''
         count = 0
-        for i, jc in enumerate(list_dates_copy):
-            if i == 0:
-                old_va = jc
-            elif i == len(list_dates_copy) - 1:
+        for index, object in enumerate(list_dates_copy):
+            if index == 0:
+                old_variable = object
+            elif index == len(list_dates_copy) - 1:
                 pass
-            elif i > 0:
-                if old_va == jc:
-                    list_data.pop(i - count)
-                    list_dates.pop(i - count)
+            elif index > 0:
+                if old_variable == object:
+                    list_data.pop(index - count)
+                    list_dates.pop(index - count)
                     count += 1
-                elif old_va != jc:
-                    old_va = jc
-    for i in range(0, len(list_data)):
-        a = list_data[i].splitted
-        list_data[i] = Day(a[0], a[1], 1)
-    le = add9(list_data, list_dates)
-    return le[0], interpolate_9(le[1]), website_1
+                elif old_variable != object:
+                    old_variable = object
+    for index in range(0, len(list_data)):
+        month = list_data[index].splitted
+        list_data[index] = Day(month[0], month[1], 1)
+    data = add9(list_data, list_dates)
+    return data[0], interpolate_9(data[1]), website_1
 
 
-def search_page(website: str, start=Day(2010, 1, 1), final=Day(2019, 9, 16), suborview=0) -> tuple[list[Day], list[int]]:
-    data_0 = take_data_2(website, suborview)
+def search_page(website: str, start=Day(2010, 1, 1), final=Day(2019, 9, 16), subs_or_views=0) -> tuple[list[Day], list[int]]:
+    data_0 = take_data_2(website, subs_or_views)
     months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
-    ye = final.splitted[0]
-    ye1 = start.splitted[0]
-    jklh = start
-    data0 = []
+    final_year = final.splitted[0]
+    start_year = start.splitted[0]
+    start_copy = start
+    data_1 = []
     optionsi = Options()
     optionsi.add_argument("--log-level=3")
     driver = Edge(service=service, options=optionsi)
@@ -239,89 +239,89 @@ def search_page(website: str, start=Day(2010, 1, 1), final=Day(2019, 9, 16), sub
         WebDriverWait(driver, 30).until(
             expected_conditions.element_to_be_clickable((By.XPATH, '//span[@class="sparkline-year-label"]')))
     except TimeoutException:
-        ye = ye1 - 1
-    year = driver.find_elements(by='xpath', value='//span[@class="sparkline-year-label"]')
-    years = [x.text for x in year]
-    while ye >= ye1:
-        if ye == 2011:
+        final_year = start_year - 1
+    years_elements = driver.find_elements(by='xpath', value='//span[@class="sparkline-year-label"]')
+    years_texts = [x.text for x in years_elements]
+    while final_year >= start_year:
+        if final_year == 2011:
             break
-        year[years.index(str(ye))].click()
+        years_elements[years_texts.index(str(final_year))].click()
         try:
             WebDriverWait(driver, 10).until(expected_conditions.presence_of_element_located(
                 (By.XPATH, '//div[@class="month-day-container "]/div/a')))
         except TimeoutException:
-            ye -= 1
+            final_year -= 1
             continue
         links = driver.find_elements(by='xpath', value='//div[@class="month-day-container "]/div/a')
         links.reverse()
         for i in range(0, len(links)):
             f = links[i].get_property('parentElement').get_property('parentElement').get_property(
                 'parentElement').get_property('parentElement').get_property('parentElement').get_property('firstChild')
-            str0 = Day(ye, months.index(f.text) + 1, int(links[i].text))
+            str0 = Day(final_year, months.index(f.text) + 1, int(links[i].text))
             if greater_or_equal(final + 1, str0) and greater_or_equal(str0, Day(2012, 3, 1)):
-                data0.append(take_data(links[i].get_attribute('href'), suborview))
+                data_1.append(take_data(links[i].get_attribute('href'), subs_or_views))
                 break
-        ye -= 1
+        final_year -= 1
     driver.quit()
     driver = Edge(service=service, options=optionsi)
     driver.get(data_0[2][:-8])
-    ano = 2013
+    year_variable = 2013
     try:
         WebDriverWait(driver, 30).until(
             expected_conditions.element_to_be_clickable((By.XPATH, '//span[@class="sparkline-year-label"]')))
     except TimeoutException:
-        ano = ye1 - 1
-    yearf = driver.find_elements(by='xpath', value='//span[@class="sparkline-year-label"]')
-    yearsf = [x.text for x in yearf]
-    while ano >= ye1:
-        if ano == 2011:
+        year_variable = start_year - 1
+    years_elements_1 = driver.find_elements(by='xpath', value='//span[@class="sparkline-year-label"]')
+    years_texts_1 = [x.text for x in years_elements_1]
+    while year_variable >= start_year:
+        if year_variable == 2011:
             break
-        yearf[yearsf.index(str(ano))].click()
+        years_elements_1[years_texts_1.index(str(year_variable))].click()
         try:
             WebDriverWait(driver, 10).until(expected_conditions.presence_of_element_located(
                 (By.XPATH, '//div[@class="month-day-container "]/div/a')))
         except TimeoutException:
-            ano -= 1
+            year_variable -= 1
             continue
         links = driver.find_elements(by='xpath', value='//div[@class="month-day-container "]/div/a')
         links.reverse()
         for i in range(0, len(links)):
             f = links[i].get_property('parentElement').get_property('parentElement').get_property(
                 'parentElement').get_property('parentElement').get_property('parentElement').get_property('firstChild')
-            str0 = Day(ano, months.index(f.text) + 1, int(links[i].text))
+            str0 = Day(year_variable, months.index(f.text) + 1, int(links[i].text))
             if lower_or_equal(str0, Day(2013, 9, 30)):
-                data0.append(take_data(links[i].get_attribute('href'), suborview))
+                data_1.append(take_data(links[i].get_attribute('href'), subs_or_views))
                 break
-        ano -= 1
+        year_variable -= 1
     driver.quit()
-    bb = []
-    if len(data0) > 1:
-        for i in range(1, len(data0)):
-            if not data0[i][0]:
+    data_copy = []
+    if len(data_1) > 1:
+        for i in range(1, len(data_1)):
+            if not data_1[i][0]:
                 continue
             if i == 1:
-                bb = join_dates_values(data0[i][0], data0[i - 1][0], data0[i][1], data0[i - 1][1])
+                data_copy = join_dates_values(data_1[i][0], data_1[i - 1][0], data_1[i][1], data_1[i - 1][1])
             else:
-                bb = join_dates_values(bb[0], data0[i][0], bb[1], data0[i][1])
-        bb = [*bb]
-    elif len(data0) == 1:
-        bb = data0[0]
-    if bb and bb[0]:
-            jhk = join_dates_values(bb[0], data_0[0], bb[1], data_0[1])
-            dates = jhk[0]
-            subs = jhk[1]
-            if where(jklh - 1, dates) != -1:
-                z = where(jklh, dates)
-                dates = dates[z:]
-                subs = subs[z:]
+                data_copy = join_dates_values(data_copy[0], data_1[i][0], data_copy[1], data_1[i][1])
+        data_copy = [*data_copy]
+    elif len(data_1) == 1:
+        data_copy = data_1[0]
+    if data_copy and data_copy[0]:
+            united_dates_values = join_dates_values(data_copy[0], data_0[0], data_copy[1], data_0[1])
+            dates = united_dates_values[0]
+            subs = united_dates_values[1]
+            if where(start_copy - 1, dates) != -1:
+                start_index = where(start_copy, dates)
+                dates = dates[start_index:]
+                subs = subs[start_index:]
             return dates, subs
-    elif not bb or not bb[0]:
+    elif not data_copy or not data_copy[0]:
         dates = data_0[0]
         subs = interpolate_9(data_0[1])
-        if where(jklh - 1, dates) != -1:
-            z = where(jklh, dates)
-            dates = dates[z:]
-            subs = subs[z:]
+        if where(start_copy - 1, dates) != -1:
+            start_index = where(start_copy, dates)
+            dates = dates[start_index:]
+            subs = subs[start_index:]
         return dates, subs
 
 

@@ -13,7 +13,7 @@ def search_channel(*args: str):
     length = []
     for i, j in enumerate(photos_links):
         print('Searching: ', profiles[i][0])
-        a = search_page(website=j, suborview=0)
+        a = search_page(website=j, subs_or_views=0)
         data.append(a[1])
         if len(a[1]) > len(length):
             length = a[0].copy()
