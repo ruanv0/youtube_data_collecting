@@ -14,7 +14,7 @@ import numpy
 import pandas
 
 
-service = Service(executable_path='/home/ruanv/Documentos/youtube/msedgedriver')
+driver_service = Service(executable_path='/home/ruanv/Documentos/youtube/msedgedriver')
 
 
 # 'subs_or_views' variable may be 0 (zero) or 1 (one).
@@ -30,22 +30,22 @@ def take_data(website: str, subs_or_views: int) -> tuple[list[Day], list[int]]:
     string3 = 'graphdivtotalviews'
     string = ''
     boolean_0 = False
-    optionsi = Options()
-    optionsi.add_argument("--log-level=3")
-    optionsi.add_experimental_option("prefs", {'profile.managed_default_content_settings.images': 2,
+    driver_options = Options()
+    driver_options.add_argument("--log-level=3")
+    driver_options.add_experimental_option("prefs", {'profile.managed_default_content_settings.images': 2,
                                                'profile.managed_default_content_settings.javascript': 2})
-    driver = Edge(service=service, options=optionsi)
+    driver = Edge(service=driver_service, options=driver_options)
     driver.get(website)
     try:
         WebDriverWait(driver, 4).until(expected_conditions.presence_of_element_located((By.XPATH, '//th')))
-        elements = driver.find_elements(by='xpath', value='//th')
-        for element in elements:
+        elements_0 = driver.find_elements(by='xpath', value='//th')
+        for element in elements_0:
             if element.text == 'Goal Date':
                 boolean_0 = True
                 break
     except TimeoutException:
         pass
-    elements = driver.find_elements(by='xpath', value='//script[@type="text/javascript"]')
+    elements_0 = driver.find_elements(by='xpath', value='//script[@type="text/javascript"]')
     if subs_or_views == 0 and boolean_0:
         string = string2
     elif subs_or_views == 1 and boolean_0:
@@ -54,7 +54,7 @@ def take_data(website: str, subs_or_views: int) -> tuple[list[Day], list[int]]:
         string = string0
     elif subs_or_views == 1 and not boolean_0:
         string = string1
-    for element in elements:
+    for element in elements_0:
         date = element.get_property('firstChild')
         if date is not None:
             if string in date['nodeValue']:
@@ -63,46 +63,46 @@ def take_data(website: str, subs_or_views: int) -> tuple[list[Day], list[int]]:
     if boolean_0:
         split_list_0 = subscribers_string.split(' +')[1:-2]
         split_list_0[0] = split_list_0[0][1:]
-        for index, object_ in enumerate(split_list_0):
-            split_list_0[index] = object_.split('\\n"')[0]
-        for index in range(0, len(split_list_0)):
-            if '+"' in split_list_0[index]:
-                split_list_0[index] = split_list_0[index].split('+"')[1]
-            elif '"' in split_list_0[index]:
-                split_list_0[index] = split_list_0[index].split('"')[1]
-        for object_ in split_list_0:
-            split_list_1 = object_.split(',')
+        for index_, string_object in enumerate(split_list_0):
+            split_list_0[index_] = string_object.split('\\n"')[0]
+        for index_ in range(0, len(split_list_0)):
+            if '+"' in split_list_0[index_]:
+                split_list_0[index_] = split_list_0[index_].split('+"')[1]
+            elif '"' in split_list_0[index_]:
+                split_list_0[index_] = split_list_0[index_].split('"')[1]
+        for string_object in split_list_0:
+            split_list_1 = string_object.split(',')
             subs.append(int(split_list_1[1]))
             data.append(Day(int(split_list_1[0][0:4]), int(split_list_1[0][4:6]), int(split_list_1[0][6:8])))
     if not boolean_0:
         split_list_2 = subscribers_string.split(' ')
-        for object_ in split_list_2:
-            data.append(object_)
+        for string_object in split_list_2:
+            data.append(string_object)
         data = list(filter(lambda x: x != '+', data))
         data = [i[1:-3] for i in data]
         index_0 = 0
         for index_1 in range(0, len(data)):
-            for object_ in data[index_1 - index_0]:
-                if object_ not in '0123456789-,':
+            for string_object in data[index_1 - index_0]:
+                if string_object not in '0123456789-,':
                     data.pop(index_1 - index_0)
                     index_0 += 1
             if data[index_1 - index_0] == '':
                 data.pop(index_1 - index_0)
                 index_0 += 1
-        for split_list_0 in range(0, len(data)):
-            data_splitted = data[split_list_0].split(',')
+        for index_ in range(0, len(data)):
+            data_splitted = data[index_].split(',')
             date = data_splitted[0].split('-')
-            data[split_list_0] = Day(int(date[0]), int(date[1]), int(date[2]))
+            data[index_] = Day(int(date[0]), int(date[1]), int(date[2]))
             subs.append(int(data_splitted[1]))
     return data, subs
 
 
 def search_channel_link(channel_name: str):
     try:
-        optionsi = Options()
-        optionsi.add_argument("--log-level=3")
-        optionsi.add_experimental_option("prefs", {'profile.managed_default_content_settings.images': 2})
-        driver = Edge(service=service, options=optionsi)
+        driver_options = Options()
+        driver_options.add_argument("--log-level=3")
+        driver_options.add_experimental_option("prefs", {'profile.managed_default_content_settings.images': 2})
+        driver = Edge(service=driver_service, options=driver_options)
         driver.get(f'https://google.com/search?q={channel_name.replace(" ", "+")}+youtube+channel')
         WebDriverWait(driver, 4).until(
             expected_conditions.presence_of_element_located((By.XPATH, '//cite')))
@@ -119,11 +119,11 @@ def search_channel_link(channel_name: str):
         WebDriverWait(driver, 30).until(
             expected_conditions.presence_of_element_located(
                 (By.XPATH, '//meta[@itemprop="identifier"]')))
-        image = driver.find_element(By.XPATH, '//link[@rel="image_src"]').get_property('href')
+        image_link = driver.find_element(By.XPATH, '//link[@rel="image_src"]').get_property('href')
         name = driver.find_element(By.XPATH, '//meta[@itemprop="name"]').get_property('content')
         identifier = driver.find_element(By.XPATH, '//meta[@itemprop="identifier"]').get_property('content')
         driver.quit()
-        return identifier, image, name
+        return identifier, image_link, name
     except TimeoutException:
         return 0, 0, 0
 
@@ -140,11 +140,11 @@ def take_data_2(website: str, subs_or_views: int) -> tuple[list[Day], list[int],
             list_0[index_] = Month(int(splitted_object[3]), months.index(splitted_object[2].split(',')[0]) + 1)
         return list_0
 
-    optionsi = Options()
-    optionsi.add_argument("--log-level=3")
-    optionsi.add_argument("start-maximized")
-    optionsi.add_experimental_option("prefs", {'profile.managed_default_content_settings.images': 2})
-    driver = Edge(service=service, options=optionsi)
+    driver_options = Options()
+    driver_options.add_argument("--log-level=3")
+    driver_options.add_argument("start-maximized")
+    driver_options.add_experimental_option("prefs", {'profile.managed_default_content_settings.images': 2})
+    driver = Edge(service=driver_service, options=driver_options)
     driver.get('https://socialblade.com')
     driver.switch_to.window(driver.window_handles[0])
     WebDriverWait(driver, 30).until(expected_conditions.visibility_of_element_located(
@@ -155,8 +155,8 @@ def take_data_2(website: str, subs_or_views: int) -> tuple[list[Day], list[int],
     WebDriverWait(driver, 30).until(
         expected_conditions.element_to_be_clickable((By.XPATH, '//div[@id="YouTubeUserMenu"]')))
     driver.get(f'{driver.current_url}/monthly')
-    list_dates = []
-    list_data = []
+    dates = []
+    data = []
     WebDriverWait(driver, 30).until(
         expected_conditions.presence_of_element_located((By.CSS_SELECTOR, 'g[class="highcharts-markers '
                                                                           'highcharts-series-0 highcharts-line-series '
@@ -179,8 +179,8 @@ def take_data_2(website: str, subs_or_views: int) -> tuple[list[Day], list[int],
         text_0 = driver.find_element(by='css selector', value='tspan[style="font-weight: bold;"]')
         text_1 = driver.find_element(by='css selector', value='tspan[style="font-size: 5pt;"]')
         split_list = int(''.join((text_0.text.split(" ")[0].split(","))))
-        list_dates.append(split_list)
-        list_data.append(text_1.text)
+        dates.append(split_list)
+        data.append(text_1.text)
     days_elements_0 = driver.find_elements(By.XPATH,
                                 '//div[@style="width: 860px; height: 32px; line-height: 32px; background: #fcfcfc; padding: 0px 20px; color:#444; font-size: 9pt; border-bottom: 1px solid #eee;"]')
     days_elements_1 = driver.find_elements(By.XPATH,
@@ -188,27 +188,27 @@ def take_data_2(website: str, subs_or_views: int) -> tuple[list[Day], list[int],
     for element in days_elements_0:
         if element.find_element(By.XPATH, './div[@style="float: left; width: 95px;"]').text == '2023-11-01':
             if subs_or_views == 0:
-                list_dates.insert(0, fix_value(element.find_element(By.XPATH, './div[@style="float: left; width: 205px;"]/div[@style="width: 140px; float: left;"]').text.replace(',', '')))
-                list_data.insert(0, element.find_element(By.XPATH, './div[@style="float: left; width: 95px;"]').text[:-3])
+                dates.insert(0, fix_value(element.find_element(By.XPATH, './div[@style="float: left; width: 205px;"]/div[@style="width: 140px; float: left;"]').text.replace(',', '')))
+                data.insert(0, element.find_element(By.XPATH, './div[@style="float: left; width: 95px;"]').text[:-3])
             elif subs_or_views == 1:
-                list_dates.insert(0, fix_value(element.find_element(By.XPATH, './div[@style="float: left; width: 240px;"]/div[@style="width: 140px; float: left;"]').text.replace(',', '')))
-                list_data.insert(0, element.find_element(By.XPATH, './div[@style="float: left; width: 95px;"]').text[:-3])
+                dates.insert(0, fix_value(element.find_element(By.XPATH, './div[@style="float: left; width: 240px;"]/div[@style="width: 140px; float: left;"]').text.replace(',', '')))
+                data.insert(0, element.find_element(By.XPATH, './div[@style="float: left; width: 95px;"]').text[:-3])
     for element in days_elements_1:
         if element.find_element(By.XPATH, './div[@style="float: left; width: 95px;"]').text == '2023-11-01':
             if subs_or_views == 0:
-                list_dates.insert(0, fix_value(element.find_element(By.XPATH, './div[@style="float: left; width: 205px;"]/div[@style="width: 140px; float: left;"]').text.replace(',', '')))
-                list_data.insert(0, element.find_element(By.XPATH, './div[@style="float: left; width: 95px;"]').text[:-3])
+                dates.insert(0, fix_value(element.find_element(By.XPATH, './div[@style="float: left; width: 205px;"]/div[@style="width: 140px; float: left;"]').text.replace(',', '')))
+                data.insert(0, element.find_element(By.XPATH, './div[@style="float: left; width: 95px;"]').text[:-3])
             elif subs_or_views == 1:
-                list_dates.insert(0, fix_value(element.find_element(By.XPATH, './div[@style="float: left; width: 240px;"]/div[@style="width: 140px; float: left;"]').text.replace(',', '')))
-                list_data.insert(0, element.find_element(By.XPATH, './div[@style="float: left; width: 95px;"]').text[:-3])
+                dates.insert(0, fix_value(element.find_element(By.XPATH, './div[@style="float: left; width: 240px;"]/div[@style="width: 140px; float: left;"]').text.replace(',', '')))
+                data.insert(0, element.find_element(By.XPATH, './div[@style="float: left; width: 95px;"]').text[:-3])
     driver.quit()
-    list_data = [list_data[0]] + convert_months(list_data[1:])
-    month = list_data[0].split('-')
-    list_data[0] = Month(int(month[0]), int(month[1]))
-    list_data.reverse()
-    list_dates.reverse()
+    data = [data[0]] + convert_months(data[1:])
+    month = data[0].split('-')
+    data[0] = Month(int(month[0]), int(month[1]))
+    data.reverse()
+    dates.reverse()
     if subs_or_views == 0:
-        list_dates_copy = list_dates.copy()
+        list_dates_copy = dates.copy()
         old_variable = ''
         count = 0
         for index, object in enumerate(list_dates_copy):
@@ -218,15 +218,15 @@ def take_data_2(website: str, subs_or_views: int) -> tuple[list[Day], list[int],
                 pass
             elif index > 0:
                 if old_variable == object:
-                    list_data.pop(index - count)
-                    list_dates.pop(index - count)
+                    data.pop(index - count)
+                    dates.pop(index - count)
                     count += 1
                 elif old_variable != object:
                     old_variable = object
-    for index in range(0, len(list_data)):
-        month = list_data[index].splitted
-        list_data[index] = Day(month[0], month[1], 1)
-    data = add9(list_data, list_dates)
+    for index in range(0, len(data)):
+        month = data[index].splitted
+        data[index] = Day(month[0], month[1], 1)
+    data = add9(data, dates)
     return data[0], interpolate_9(data[1]), website_1
 
 
@@ -240,9 +240,9 @@ def search_page(website: str, start=Day(2010, 1, 1), final=Day(2019, 9, 16), sub
     start_year = start.splitted[0]
     start_copy = start
     data_1 = []
-    optionsi = Options()
-    optionsi.add_argument("--log-level=3")
-    driver = Edge(service=service, options=optionsi)
+    driver_options = Options()
+    driver_options.add_argument("--log-level=3")
+    driver = Edge(service=driver_service, options=driver_options)
     driver.get(data_0[2])
     try:
         WebDriverWait(driver, 30).until(
@@ -263,16 +263,16 @@ def search_page(website: str, start=Day(2010, 1, 1), final=Day(2019, 9, 16), sub
             continue
         links = driver.find_elements(by='xpath', value='//div[@class="month-day-container "]/div/a')
         links.reverse()
-        for i in range(0, len(links)):
-            f = links[i].get_property('parentElement').get_property('parentElement').get_property(
+        for index_ in range(0, len(links)):
+            f = links[index_].get_property('parentElement').get_property('parentElement').get_property(
                 'parentElement').get_property('parentElement').get_property('parentElement').get_property('firstChild')
-            str0 = Day(final_year, months.index(f.text) + 1, int(links[i].text))
+            str0 = Day(final_year, months.index(f.text) + 1, int(links[index_].text))
             if greater_or_equal(final + 1, str0) and greater_or_equal(str0, Day(2012, 3, 1)):
-                data_1.append(take_data(links[i].get_attribute('href'), subs_or_views))
+                data_1.append(take_data(links[index_].get_attribute('href'), subs_or_views))
                 break
         final_year -= 1
     driver.quit()
-    driver = Edge(service=service, options=optionsi)
+    driver = Edge(service=driver_service, options=driver_options)
     driver.get(data_0[2][:-8])
     year_variable = 2013
     try:
@@ -294,24 +294,24 @@ def search_page(website: str, start=Day(2010, 1, 1), final=Day(2019, 9, 16), sub
             continue
         links = driver.find_elements(by='xpath', value='//div[@class="month-day-container "]/div/a')
         links.reverse()
-        for i in range(0, len(links)):
-            f = links[i].get_property('parentElement').get_property('parentElement').get_property(
+        for index_ in range(0, len(links)):
+            f = links[index_].get_property('parentElement').get_property('parentElement').get_property(
                 'parentElement').get_property('parentElement').get_property('parentElement').get_property('firstChild')
-            str0 = Day(year_variable, months.index(f.text) + 1, int(links[i].text))
+            str0 = Day(year_variable, months.index(f.text) + 1, int(links[index_].text))
             if lower_or_equal(str0, Day(2013, 9, 30)):
-                data_1.append(take_data(links[i].get_attribute('href'), subs_or_views))
+                data_1.append(take_data(links[index_].get_attribute('href'), subs_or_views))
                 break
         year_variable -= 1
     driver.quit()
     data_copy = []
     if len(data_1) > 1:
-        for i in range(1, len(data_1)):
-            if not data_1[i][0]:
+        for index_ in range(1, len(data_1)):
+            if not data_1[index_][0]:
                 continue
-            if i == 1:
-                data_copy = join_dates_values(data_1[i][0], data_1[i - 1][0], data_1[i][1], data_1[i - 1][1])
+            if index_ == 1:
+                data_copy = join_dates_values(data_1[index_][0], data_1[index_ - 1][0], data_1[index_][1], data_1[index_ - 1][1])
             else:
-                data_copy = join_dates_values(data_copy[0], data_1[i][0], data_copy[1], data_1[i][1])
+                data_copy = join_dates_values(data_copy[0], data_1[index_][0], data_copy[1], data_1[index_][1])
         data_copy = [*data_copy]
     elif len(data_1) == 1:
         data_copy = data_1[0]
@@ -335,59 +335,59 @@ def search_page(website: str, start=Day(2010, 1, 1), final=Day(2019, 9, 16), sub
 
 
 def take_data_from_comparison(website: str):
-    optionsi = Options()
-    optionsi.add_argument("--log-level=3")
-    optionsi.add_argument("start-maximized")
-    optionsi.add_experimental_option("prefs", {'profile.managed_default_content_settings.images': 2})
-    driver = Edge(service=service, options=optionsi)
+    driver_options = Options()
+    driver_options.add_argument("--log-level=3")
+    driver_options.add_argument("start-maximized")
+    driver_options.add_experimental_option("prefs", {'profile.managed_default_content_settings.images': 2})
+    driver = Edge(service=driver_service, options=driver_options)
     driver.get(website)
-    dates_ = []
-    data0 = []
-    data1 = []
-    data2 = []
-    data0_ = []
-    data1_ = []
-    data2_ = []
+    dates_0 = []
+    data_0 = []
+    data_1 = []
+    data_2 = []
+    data_3 = []
+    data_4 = []
+    data_5 = []
     while True:
         sleep(0.1)
         try:
             if 'google' in driver.current_url:
                 driver.quit()
                 break
-            e = driver.find_element(By.XPATH, value='//div[@class="dygraph-legend"]')
-            f = e.text.split(': ')
-            print(len(dates_), 'of 718')
-            if len(f) == 5:
-                j = f[0].replace('/', '-')
-                if j not in dates_:
-                    dates_.append(j)
-                    data0.append(fix_value(f[2].split(' ')[0]))
-                    data1.append(fix_value(f[3].split(' ')[0]))
-                    data2.append(fix_value(f[4]))
+            element_0 = driver.find_element(By.XPATH, value='//div[@class="dygraph-legend"]')
+            splitted_element_text_0 = element_0.text.split(': ')
+            print(len(dates_0), 'of 718')
+            if len(splitted_element_text_0) == 5:
+                date_string_0 = splitted_element_text_0[0].replace('/', '-')
+                if date_string_0 not in dates_0:
+                    dates_0.append(date_string_0)
+                    data_0.append(fix_value(splitted_element_text_0[2].split(' ')[0]))
+                    data_1.append(fix_value(splitted_element_text_0[3].split(' ')[0]))
+                    data_2.append(fix_value(splitted_element_text_0[4]))
         except TimeoutException:
             pass
-    dates_ = numpy.asarray(dates_, dtype='datetime64')
-    dates = numpy.sort(dates_)
-    for _ in numpy.arange(0, len(dates_)):
-        m = numpy.where(dates_ == numpy.min(dates_))[0][0]
-        data0_.append(data0[m])
-        data1_.append(data1[m])
-        data2_.append(data2[m])
-        dates_[m] = numpy.datetime64('9999-12-31')
-    l0 = 0
-    dates_ = numpy.arange('2020-09-29', '2022-09-17', dtype='datetime64')
-    for y in numpy.arange(0, numpy.size(dates_)):
-        if dates_[y] not in dates:
-            data0_.insert(y + l0, 999999999999999)
-            data1_.insert(y + l0, 999999999999999)
-            data2_.insert(y + l0, 999999999999999)
-            l0 += 1
-    data0_ = interpolate_9(data0_)
-    data1_ = interpolate_9(data1_)
-    data2_ = interpolate_9(data2_)
-    dict0 = {'Mantovani': data0_, 'TABINHO': data1_, 'ALDO TV': data2_}
-    dados = pandas.DataFrame(dict0, index=dates_).transpose()
-    dados.to_csv('part12-sg.csv')
+    dates_0 = numpy.asarray(dates_0, dtype='datetime64')
+    dates_1 = numpy.sort(dates_0)
+    for _ in numpy.arange(0, len(dates_0)):
+        where_index = numpy.where(dates_0 == numpy.min(dates_0))[0][0]
+        data_3.append(data_0[where_index])
+        data_4.append(data_1[where_index])
+        data_5.append(data_2[where_index])
+        dates_0[where_index] = numpy.datetime64('9999-12-31')
+    count = 0
+    dates_0 = numpy.arange('2020-09-29', '2022-09-17', dtype='datetime64')
+    for index_ in numpy.arange(0, numpy.size(dates_0)):
+        if dates_0[index_] not in dates_1:
+            data_3.insert(index_ + count, 999999999999999)
+            data_4.insert(index_ + count, 999999999999999)
+            data_5.insert(index_ + count, 999999999999999)
+            count += 1
+    data_3 = interpolate_9(data_3)
+    data_4 = interpolate_9(data_4)
+    data_5 = interpolate_9(data_5)
+    dict0 = {'Mantovani': data_3, 'TABINHO': data_4, 'ALDO TV': data_5}
+    data_frame_0 = pandas.DataFrame(dict0, index=dates_0).transpose()
+    data_frame_0.to_csv('part12-sg.csv')
 
 
 '''

@@ -79,21 +79,21 @@ class Month:
         return month_splitted
 
     def __sub__(self, int_for_subtraction: int):
-        r = self.splitted
+        month_splitted = self.splitted
         while True:
-            if r[1] - int_for_subtraction < 1:
-                r[0] -= 1
-                int_for_subtraction -= r[1]
-                r[1] = 12
+            if month_splitted[1] - int_for_subtraction < 1:
+                month_splitted[0] -= 1
+                int_for_subtraction -= month_splitted[1]
+                month_splitted[1] = 12
             else:
                 break
-        return r
+        return month_splitted
 
 
 def days_range(years_months_days_splitted_0: Day, years_months_days_splitted_1: Day) -> list[Day]:
     years_months_days_splitted_0 = years_months_days_splitted_0.splitted
     years_months_days_splitted_1 = years_months_days_splitted_1.splitted
-    list_0 = []
+    days_list = []
     for year in range(years_months_days_splitted_0[0], years_months_days_splitted_1[0] + 1):
         month_0 = 1
         month_1 = 12
@@ -111,8 +111,8 @@ def days_range(years_months_days_splitted_0: Day, years_months_days_splitted_1: 
             if year == years_months_days_splitted_1[0] and month == years_months_days_splitted_1[1]:
                 day_1 = years_months_days_splitted_1[2]
             for z in range(day_0, day_1 + 1):
-                list_0.append(Day(year, month, z))
-    return list_0
+                days_list.append(Day(year, month, z))
+    return days_list
 
 
 def greater(day0: Day, day1: Day) -> bool:
@@ -167,10 +167,10 @@ def lower_or_equal(day0: Day, day1: Day) -> bool:
     return boolean_0
 
 
-def where(obj: Day, dates: list[Day]):
-    x = -1
-    for c in range(0, len(dates)):
-        if dates[c].day == obj.day:
-            x = c
+def where(day_object: Day, dates: list[Day]):
+    where_index = -1
+    for index_ in range(0, len(dates)):
+        if dates[index_].day == day_object.day:
+            where_index = index_
             break
-    return x
+    return where_index

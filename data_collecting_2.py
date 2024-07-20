@@ -12,11 +12,11 @@ from utils import add9, interpolate_9
 
 def collect_subs_data(item: str) -> str:
     string_data = ''
-    optionsi = Options()
-    optionsi.add_argument("--log-level=3")
-    optionsi.add_experimental_option("prefs", {'profile.managed_default_content_settings.images': 2})
+    driver_options = Options()
+    driver_options.add_argument("--log-level=3")
+    driver_options.add_experimental_option("prefs", {'profile.managed_default_content_settings.images': 2})
     service = Service(executable_path='msedgedriver')
-    driver = webdriver.Chrome(service=service, options=optionsi)
+    driver = webdriver.Chrome(service=service, options=driver_options)
     driver.get(item)
     try:
         WebDriverWait(driver, 4).until(expected_conditions.presence_of_element_located(
@@ -47,11 +47,11 @@ def collect_subs_data(item: str) -> str:
 
 
 def search_youtube_page(user_id: str, name: str):
-    optionsi = Options()
-    optionsi.add_argument("--log-level=3")
-    optionsi.add_experimental_option("prefs", {'profile.managed_default_content_settings.images': 2})
+    driver_options = Options()
+    driver_options.add_argument("--log-level=3")
+    driver_options.add_experimental_option("prefs", {'profile.managed_default_content_settings.images': 2})
     service = Service(executable_path='msedgedriver')
-    driver = webdriver.Chrome(service=service, options=optionsi)
+    driver = webdriver.Chrome(service=service, options=driver_options)
     website = f'https://web.archive.org/web/*/http://youtube.com/user/{user_id}'
     dates = []
     subs = []
@@ -65,34 +65,34 @@ def search_youtube_page(user_id: str, name: str):
             expected_conditions.element_to_be_clickable((By.XPATH, '//span[@class="sparkline-year-label"]')))
     except TimeoutException:
         start_year = final_year
-    year = driver.find_elements(by='xpath', value='//span[@class="sparkline-year-label"]')
-    for c in year:
-        years.append(c.text)
+    years_elements = driver.find_elements(by='xpath', value='//span[@class="sparkline-year-label"]')
+    for element in years_elements:
+        years.append(element.text)
     while final_year >= start_year:
-        year[years.index(str(final_year))].click()
+        years_elements[years.index(str(final_year))].click()
         try:
             WebDriverWait(driver, 10).until(expected_conditions.presence_of_element_located(
                 (By.XPATH, '//div[@class="month-day-container "]/div/a')))
         except TimeoutException:
             final_year -= 1
             continue
-        links = driver.find_elements(by='xpath', value='//div[@class="month-day-container "]/div/a')
-        links.reverse()
-        for i in range(0, len(links)):
-            f = links[i].get_property('parentElement').get_property('parentElement').get_property(
+        links_elements = driver.find_elements(by='xpath', value='//div[@class="month-day-container "]/div/a')
+        links_elements.reverse()
+        for i in range(0, len(links_elements)):
+            f = links_elements[i].get_property('parentElement').get_property('parentElement').get_property(
                 'parentElement').get_property('parentElement').get_property('parentElement').get_property('firstChild')
-            dates.append(Day(final_year, months.index(f.text) + 1, int(links[i].text)))
-            subs.append(collect_subs_data(links[i].get_attribute('href')))
+            dates.append(Day(final_year, months.index(f.text) + 1, int(links_elements[i].text)))
+            subs.append(collect_subs_data(links_elements[i].get_attribute('href')))
         final_year -= 1
-        # k = 0
         dates = [dates[x] for x in range(0, len(subs)) if subs[x] != '']
         subs = [x for x in subs if x != '']
         '''
-        for c in range(0, len(subs)):
-            if subs[c - k] == '':
-                dates.pop(c - k)
-                subs.pop(c - k)
-                k += 1'''
+        count = 0
+        for index_ in range(0, len(subs)):
+            if subs[index_ - count] == '':
+                dates.pop(index_ - count)
+                subs.pop(index_ - count)
+                count += 1'''
     driver.quit()
     dates.reverse()
     subs.reverse()
@@ -110,5 +110,5 @@ def search_youtube_page(user_id: str, name: str):
 if __name__ == '__main__':
     users_ids = ['AuthenticGames']
     names = ['AuthenticGames']
-    for i in range(0, len(users_ids)):
-        search_youtube_page(users_ids[i], names[i])
+    for index_ in range(0, len(users_ids)):
+        search_youtube_page(users_ids[index_], names[index_])

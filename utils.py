@@ -2,11 +2,11 @@ from dates import days_range, Day, where, lower_or_equal, greater
 
 
 def add9(dates: list[Day], data: list[int]) -> tuple[list[Day], list[int]]:
-    a = days_range(dates[0], dates[-1])
-    for i in range(0, len(a)):
-        if a[i].day != dates[i].day:
+    days_0 = days_range(dates[0], dates[-1])
+    for i in range(0, len(days_0)):
+        if days_0[i].day != dates[i].day:
             data.insert(i, 999999999999999)
-            dates.insert(i, Day(*a[i].splitted))
+            dates.insert(i, Day(*days_0[i].splitted))
     return dates, data
 
 
@@ -14,15 +14,15 @@ def interpolate_9(list_0: list[int]) -> list[int]:
     nines = 999999999999999
     boolean_0 = False
     boolean_1 = False
-    counter = 0
+    count = 0
     for index, object in enumerate(list_0):
         if object == 999999999999999:
             if not boolean_0:
                 nines = index-1
                 boolean_0 = True
             if index == len(list_0)-1:
-                if counter == 0:
-                    counter = list_0[nines] - list_0[nines - 1]
+                if count == 0:
+                    count = list_0[nines] - list_0[nines - 1]
                 for number in range(nines+1, index+1):
                     list_0[number] = list_0[number - 1] + list_0[number - 1] - list_0[number - 2]
                     boolean_0 = False
@@ -30,8 +30,8 @@ def interpolate_9(list_0: list[int]) -> list[int]:
         if boolean_0 and object != 999999999999999:
             boolean_1 = True
         if boolean_1:
-            counter = list_0[index] - list_0[nines]
-            f = counter / (index - nines)
+            count = list_0[index] - list_0[nines]
+            f = count / (index - nines)
             for number in range(nines + 1, index):
                 list_0[number] = list_0[nines] + int(f * (number - nines))
                 boolean_0 = False
